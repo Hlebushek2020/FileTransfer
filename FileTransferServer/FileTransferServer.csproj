@@ -14,9 +14,9 @@
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <OutputPath>bin\$(Configuration)_$(Platform)\</OutputPath>
     </PropertyGroup>
-
+    
     <ItemGroup>
-        <PackageReference Include="System.Text.Json" Version="8.0.5"/>
+        <ProjectReference Include="..\FileTransfer.Clasess\FileTransfer.Clasess.csproj"/>
     </ItemGroup>
 
 </Project>
