@@ -16,7 +16,7 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <ProjectReference Include="..\FileTransfer.Clasess\FileTransfer.Clasess.csproj"/>
+        <ProjectReference Include="..\FileTransfer.Classes\FileTransfer.Classes.csproj"/>
     </ItemGroup>
 
 </Project>

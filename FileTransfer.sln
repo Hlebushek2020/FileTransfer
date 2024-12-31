@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileTransferServer", "FileT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileTransferClient", "FileTransferClient\FileTransferClient.csproj", "{3B07A746-6BE3-496F-9659-F99532D32BE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileTransfer.Clasess", "FileTransfer.Clasess\FileTransfer.Clasess.csproj", "{54329160-9D6D-44CB-A304-0711AC1B08EC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileTransfer.Classes", "FileTransfer.Classes\FileTransfer.Classes.csproj", "{54329160-9D6D-44CB-A304-0711AC1B08EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,4 +1,4 @@
-namespace FileTransfer;
+namespace FileTransfer.Classes;
 
 public enum Commands
 {

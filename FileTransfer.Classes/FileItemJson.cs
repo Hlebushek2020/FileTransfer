@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using System.Text.Json;
 
-namespace FileTransfer;
+namespace FileTransfer.Classes;
 
 public class FileItemJson
 {
@@ -9,23 +8,6 @@ public class FileItemJson
     public bool IsDirectory { get; set; }
     public long? Size { get; set; }
 
-    public static IList<FileItemJson> ListParse(string json)
-    {
-        return JsonSerializer.Deserialize<List<FileItemJson>>(json, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            WriteIndented = false
-        });
-    }
-
-    public static string ListSerialize(IList<FileItemJson> list)
-    {
-        return JsonSerializer.Serialize(list, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            WriteIndented = false
-        });
-    }
 
     public static FileItemJson Parse(string json)
     {
