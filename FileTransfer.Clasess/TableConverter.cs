@@ -10,9 +10,9 @@ public class TableConverter
     {
         ConsoleTable consoleTable = new ConsoleTable(tableName);
 
-        consoleTable.AddColumn("Ind");
+        consoleTable.AddColumn("#");
         consoleTable.AddColumn("Item");
-        consoleTable.AddColumn("Is Directory");
+        consoleTable.AddColumn("Directory");
         consoleTable.AddColumn("Size");
 
         int counter = 0;

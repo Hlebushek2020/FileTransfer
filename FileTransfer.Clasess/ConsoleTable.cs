@@ -35,9 +35,8 @@ public class ConsoleTable
         if (_columns.Count <= 0)
             return;
 
-        int lenghtSep = 3 * (_columns.Count - 1) + _fullLenght + 2;
         writer.WriteLine(_tableTitle);
-        lenghtSep += 2;
+        int lenghtSep = 3 * (_columns.Count - 1) + _fullLenght + 4;
         for (int numColumn = 0; numColumn < _columns.Count; numColumn++)
         {
             if (numColumn == 0)

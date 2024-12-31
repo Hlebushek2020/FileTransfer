@@ -32,13 +32,51 @@ internal class Program
         bool isCommandExecute = true;
         while (isCommandExecute)
         {
-            string command = binaryReader.ReadString();
+            Console.Write("#: ");
+
+            string command = Console.ReadLine();
+            command = command.Replace("  ", " ");
+
             if (command.Equals(Commands.Exit.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 binaryWriter.Write(new CommandJson { Command = Commands.Exit }.ToString());
                 isCommandExecute = false;
                 continue;
             }
+
+            string[] commandParts = command.Split(' ');
+
+            if (commandParts.Length > 1)
+            {
+                //download check
+                continue;
+            }
+
+            int itemIndex = int.Parse(commandParts[0]);
+
+            if (itemIndex >= items.Count)
+            {
+                Console.WriteLine("Invalid index");
+                continue;
+            }
+
+            FileItemJson selectItem = items[itemIndex];
+
+            if (!selectItem.IsDirectory)
+            {
+                Console.WriteLine("Item is not a directory");
+                continue;
+            }
+
+            binaryWriter.Write(new CommandJson
+            {
+                Command = Commands.Directory,
+                Args = selectItem.FileName
+            }.ToString());
+
+            items = FileItemJson.ListParse(binaryReader.ReadString());
+            table = TableConverter.CreateTable(selectItem.FileName, items);
+            table.Print(Console.Out);
         }
     }
 }
