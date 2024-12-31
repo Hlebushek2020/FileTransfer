@@ -69,8 +69,6 @@ public class ConsoleTable
                     writer.WriteLine();
             }
         }
-
-        writer.WriteLine(new string('-', lenghtSep));
     }
 
     private class Column

@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
-using FileTransfer;
+using FileTransfer.Classes;
 
 namespace FileTransferClient;
 
@@ -25,8 +24,8 @@ internal class Program
         using BinaryWriter binaryWriter = new BinaryWriter(networkStream, Encoding.UTF8);
 
         binaryWriter.Write(new CommandJson { Command = Commands.Directory }.ToString());
-        IList<FileItemJson> items = FileItemJson.ListParse(binaryReader.ReadString());
-        ConsoleTable table = TableConverter.CreateTable("Root", items);
+        ItemsJson items = ItemsJson.Parse(binaryReader.ReadString());
+        ConsoleTable table = TableConverter.CreateTable("Root", items.Items);
         table.Print(Console.Out);
 
         bool isCommandExecute = true;
@@ -54,13 +53,13 @@ internal class Program
 
             int itemIndex = int.Parse(commandParts[0]);
 
-            if (itemIndex >= items.Count)
+            if (itemIndex >= items.Items.Count)
             {
                 Console.WriteLine("Invalid index");
                 continue;
             }
 
-            FileItemJson selectItem = items[itemIndex];
+            FileItemJson selectItem = items.Items[itemIndex];
 
             if (!selectItem.IsDirectory)
             {
@@ -74,9 +73,18 @@ internal class Program
                 Args = selectItem.FileName
             }.ToString());
 
-            items = FileItemJson.ListParse(binaryReader.ReadString());
-            table = TableConverter.CreateTable(selectItem.FileName, items);
-            table.Print(Console.Out);
+            ItemsJson newItems = ItemsJson.Parse(binaryReader.ReadString());
+
+            if (string.IsNullOrWhiteSpace(newItems.Error))
+            {
+                items = newItems;
+                table = TableConverter.CreateTable(selectItem.FileName, items.Items);
+                table.Print(Console.Out);
+            }
+            else
+            {
+                Console.WriteLine(newItems.Error);
+            }
         }
     }
 }

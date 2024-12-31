@@ -20,7 +20,10 @@ public class TableConverter
         {
             ConsoleTable.Row row = consoleTable.AddRow();
             row[0] = (counter++).ToString();
-            row[1] = Path.GetDirectoryName(item.FileName) ?? item.FileName;
+
+            string fileName = Path.GetFileName(item.FileName);
+
+            row[1] = string.IsNullOrWhiteSpace(fileName) ? item.FileName : fileName;
             row[2] = item.IsDirectory.ToString();
             row[3] = item.Size.HasValue ? Convert(item.Size.Value) : string.Empty;
         }

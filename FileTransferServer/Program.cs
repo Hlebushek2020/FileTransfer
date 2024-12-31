@@ -4,7 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using FileTransfer;
+using FileTransfer.Classes;
 
 namespace FileTransferServer;
 
@@ -45,22 +45,30 @@ internal class Program
                     break;
 
                 case Commands.Directory:
-                    IList<FileItemJson> entries = new List<FileItemJson>();
-                    if (string.IsNullOrWhiteSpace(commandJson.Args))
+                    try
                     {
-                        foreach (string drive in Directory.GetLogicalDrives())
-                            entries.Add(new FileItemJson { FileName = drive, IsDirectory = true });
+                        IList<FileItemJson> entries = new List<FileItemJson>();
+                        if (string.IsNullOrWhiteSpace(commandJson.Args))
+                        {
+                            foreach (string drive in Directory.GetLogicalDrives())
+                                entries.Add(new FileItemJson { FileName = drive, IsDirectory = true });
+                        }
+                        else
+                        {
+                            DirectoryInfo directoryInfo = new DirectoryInfo(commandJson.Args);
+                            foreach (DirectoryInfo directory in directoryInfo.GetDirectories())
+                                entries.Add(new FileItemJson { FileName = directory.FullName, IsDirectory = true });
+                            foreach (FileInfo fileInfo in directoryInfo.GetFiles())
+                                entries.Add(new FileItemJson { FileName = fileInfo.FullName, Size = fileInfo.Length });
+                        }
+
+                        binaryWriter.Write(new ItemsJson(entries).ToString());
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        DirectoryInfo directoryInfo = new DirectoryInfo(commandJson.Args);
-                        foreach (DirectoryInfo directory in directoryInfo.GetDirectories())
-                            entries.Add(new FileItemJson { FileName = directory.FullName, IsDirectory = true });
-                        foreach (FileInfo fileInfo in directoryInfo.GetFiles())
-                            entries.Add(new FileItemJson { FileName = fileInfo.FullName, Size = fileInfo.Length });
+                        binaryWriter.Write(new ItemsJson(ex).ToString());
                     }
 
-                    binaryWriter.Write(FileItemJson.ListSerialize(entries));
                     break;
             }
         }

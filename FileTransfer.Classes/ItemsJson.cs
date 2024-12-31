@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
@@ -8,9 +9,23 @@ public class ItemsJson
     public IList<FileItemJson> Items { get; set; }
     public string Error { get; set; }
 
-    public static IList<FileItemJson> Parse(string json)
+    public ItemsJson()
     {
-        return JsonSerializer.Deserialize<List<FileItemJson>>(json, new JsonSerializerOptions
+    }
+
+    public ItemsJson(IList<FileItemJson> items)
+    {
+        Items = items;
+    }
+
+    public ItemsJson(Exception exception)
+    {
+        Error = exception.Message;
+    }
+
+    public static ItemsJson Parse(string json)
+    {
+        return JsonSerializer.Deserialize<ItemsJson>(json, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
             WriteIndented = false
