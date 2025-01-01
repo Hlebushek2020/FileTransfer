@@ -28,18 +28,55 @@ internal class Program
         ConsoleTable table = TableConverter.CreateTable("Root", items.Items);
         table.Print(Console.Out);
 
+        FileItemJson selectItem = null;
+        ItemsJson newItems = null;
+
         bool isCommandExecute = true;
         while (isCommandExecute)
         {
             Console.Write("#: ");
 
             string command = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(command))
+                continue;
+
             command = command.Replace("  ", " ");
 
             if (command.Equals(Commands.Exit.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 binaryWriter.Write(new CommandJson { Command = Commands.Exit }.ToString());
                 isCommandExecute = false;
+                continue;
+            }
+
+            if (command.Equals(Commands.Back.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                if (selectItem == null)
+                {
+                    Console.WriteLine("Command is unavailable");
+                    continue;
+                }
+
+                binaryWriter.Write(new CommandJson
+                {
+                    Command = Commands.Directory,
+                    Args = Path.GetDirectoryName(selectItem.FileName)
+                }.ToString());
+
+                newItems = ItemsJson.Parse(binaryReader.ReadString());
+
+                if (string.IsNullOrWhiteSpace(newItems.Error))
+                {
+                    items = newItems;
+                    table = TableConverter.CreateTable(selectItem.FileName, items.Items);
+                    table.Print(Console.Out);
+                }
+                else
+                {
+                    Console.WriteLine(newItems.Error);
+                }
+
                 continue;
             }
 
@@ -59,7 +96,7 @@ internal class Program
                 continue;
             }
 
-            FileItemJson selectItem = items.Items[itemIndex];
+            selectItem = items.Items[itemIndex];
 
             if (!selectItem.IsDirectory)
             {
@@ -73,7 +110,7 @@ internal class Program
                 Args = selectItem.FileName
             }.ToString());
 
-            ItemsJson newItems = ItemsJson.Parse(binaryReader.ReadString());
+            newItems = ItemsJson.Parse(binaryReader.ReadString());
 
             if (string.IsNullOrWhiteSpace(newItems.Error))
             {

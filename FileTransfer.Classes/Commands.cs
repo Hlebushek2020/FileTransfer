@@ -4,5 +4,6 @@ public enum Commands
 {
     Exit = 0,
     Directory = 1,
-    Download = 2,
+    Back = 2,
+    Download = 3,
 }
