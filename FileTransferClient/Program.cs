@@ -41,7 +41,7 @@ internal class Program
             if (string.IsNullOrWhiteSpace(command))
                 continue;
 
-            command = command.Replace("  ", " ");
+            command = command.Replace("  ", " ").Trim(' ');
 
             if (command.Equals(Commands.Exit.ToString(), StringComparison.OrdinalIgnoreCase))
             {
@@ -80,15 +80,9 @@ internal class Program
                 continue;
             }
 
-            string[] commandParts = command.Split(' ');
+            int firstEscapeIndex = command.IndexOf(' ');
 
-            if (commandParts.Length > 1)
-            {
-                //download check
-                continue;
-            }
-
-            int itemIndex = int.Parse(commandParts[0]);
+            int itemIndex = int.Parse(command.Substring(0, firstEscapeIndex));
 
             if (itemIndex >= items.Items.Count)
             {
@@ -97,6 +91,17 @@ internal class Program
             }
 
             selectItem = items.Items[itemIndex];
+
+            int secondEscapeIndex = command.IndexOf(' ', firstEscapeIndex);
+
+            if (firstEscapeIndex != -1 && secondEscapeIndex != -1)
+            {
+                string subCommand = command.Substring(firstEscapeIndex, secondEscapeIndex - firstEscapeIndex);
+                if (subCommand.Equals(Commands.Download.ToString(), StringComparison.OrdinalIgnoreCase))
+                    Download(binaryReader, binaryWriter, selectItem, command.Substring(secondEscapeIndex));
+
+                continue;
+            }
 
             if (!selectItem.IsDirectory)
             {
@@ -122,6 +127,43 @@ internal class Program
             {
                 Console.WriteLine(newItems.Error);
             }
+        }
+    }
+
+    private static void Download(
+        BinaryReader binaryReader,
+        BinaryWriter binaryWriter,
+        FileItemJson selected,
+        string outputPath)
+    {
+        binaryWriter.Write(new CommandJson
+        {
+            Command = Commands.Download,
+            Args = selected.FileName
+        }.ToString());
+
+        while (binaryReader.ReadBoolean())
+        {
+            string relativeFileName = binaryReader.ReadString();
+            string fullFileName = Path.Combine(outputPath, relativeFileName);
+            string directory = Path.GetDirectoryName(fullFileName);
+
+            if (!string.IsNullOrWhiteSpace(directory))
+                Directory.CreateDirectory(directory);
+
+            using FileStream fileStream = new FileStream(fullFileName, FileMode.Create, FileAccess.Write);
+
+            int bufferSize;
+
+            do
+            {
+                bufferSize = binaryReader.ReadInt32();
+
+                byte[] buffer = new byte[bufferSize];
+                binaryWriter.Write(buffer);
+
+                fileStream.Write(buffer, 0, bufferSize);
+            } while (bufferSize != 0);
         }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -33,22 +32,16 @@ public class TableConverter
 
     private static string Convert(long value)
     {
-        long num1 = value;
-        if (num1 < 1024L)
-            return ConvertToString(num1, 0L, "B");
-        long num2 = num1 / 1024L;
-        if (num2 < 1024L)
-            return ConvertToString(num2, 0L, "KB");
-        long num3 = num2 / 1024L;
-        return num3 < 1024L
-            ? ConvertToString(num3, num2 % 1024L, "MB")
-            : ConvertToString(num3 / 1024L, num3 % 1024L, "GB");
-    }
+        if (value < 1024)
+            return $"{value} b";
 
-    private static string ConvertToString(long value, long subValue, string sizeName)
-    {
-        return subValue >= 100L
-            ? $"{value},{Math.Round(subValue * 0.01, MidpointRounding.AwayFromZero)} {sizeName}"
-            : $"{value} {sizeName}";
+        double size = value / 1024.0;
+
+        if (size < 1024.0)
+            return $"{size:f2} kb";
+
+        size /= 1024.0;
+
+        return size < 1024.0 ? $"{size:f2} mb" : $"{(size / 1024.0):f2} gb";
     }
 }
