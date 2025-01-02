@@ -82,7 +82,7 @@ internal class Program
 
             int firstEscapeIndex = command.IndexOf(' ');
 
-            int itemIndex = int.Parse(command.Substring(0, firstEscapeIndex));
+            int itemIndex = int.Parse(firstEscapeIndex != -1 ? command[..firstEscapeIndex] : command);
 
             if (itemIndex >= items.Items.Count)
             {
@@ -92,13 +92,13 @@ internal class Program
 
             selectItem = items.Items[itemIndex];
 
-            int secondEscapeIndex = command.IndexOf(' ', firstEscapeIndex);
+            int secondEscapeIndex = firstEscapeIndex != -1 ? command.IndexOf(' ', firstEscapeIndex + 1) : -1;
 
             if (firstEscapeIndex != -1 && secondEscapeIndex != -1)
             {
-                string subCommand = command.Substring(firstEscapeIndex, secondEscapeIndex - firstEscapeIndex);
+                string subCommand = command.Substring(firstEscapeIndex + 1, secondEscapeIndex - firstEscapeIndex - 1);
                 if (subCommand.Equals(Commands.Download.ToString(), StringComparison.OrdinalIgnoreCase))
-                    Download(binaryReader, binaryWriter, selectItem, command.Substring(secondEscapeIndex));
+                    Download(binaryReader, binaryWriter, selectItem, command.Substring(secondEscapeIndex + 1));
 
                 continue;
             }
@@ -158,9 +158,7 @@ internal class Program
             do
             {
                 bufferSize = binaryReader.ReadInt32();
-
-                byte[] buffer = new byte[bufferSize];
-                binaryWriter.Write(buffer);
+                byte[] buffer = binaryReader.ReadBytes(bufferSize);
 
                 fileStream.Write(buffer, 0, bufferSize);
             } while (bufferSize != 0);
