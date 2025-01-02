@@ -43,6 +43,8 @@ internal class Program
         {
             CommandJson commandJson = CommandJson.Parse(binaryReader.ReadString());
 
+            Console.WriteLine($"Command: {commandJson.Command}");
+
             switch (commandJson.Command)
             {
                 case Commands.Exit:
@@ -99,6 +101,8 @@ internal class Program
         for (int numFileInfo = 0; numFileInfo < files.Length; numFileInfo++)
         {
             FileInfo fileInfo = files[numFileInfo];
+
+            Console.WriteLine($"Send file: {fileInfo.FullName}");
 
             binaryWriter.Write(fileInfo.FullName.Substring(startPathIndex));
 
