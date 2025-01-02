@@ -43,7 +43,7 @@ internal class Program
         {
             CommandJson commandJson = CommandJson.Parse(binaryReader.ReadString());
 
-            Console.WriteLine($"Command: {commandJson.Command}");
+            Console.WriteLine($"Command: {commandJson.Command}; Args: {commandJson.Args}");
 
             switch (commandJson.Command)
             {
@@ -59,6 +59,8 @@ internal class Program
                     DownloadCommandHandler(commandJson, binaryWriter);
                     break;
             }
+
+            Console.WriteLine($"Command completed: {commandJson.Command}");
         }
     }
 

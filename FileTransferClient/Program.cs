@@ -151,6 +151,8 @@ internal class Program
             if (!string.IsNullOrWhiteSpace(directory))
                 Directory.CreateDirectory(directory);
 
+            Console.Write($"Download file: {relativeFileName}; ");
+
             using FileStream fileStream = new FileStream(fullFileName, FileMode.Create, FileAccess.Write);
 
             int bufferSize;
@@ -162,6 +164,8 @@ internal class Program
 
                 fileStream.Write(buffer, 0, bufferSize);
             } while (bufferSize != 0);
+
+            Console.WriteLine("Downloaded!");
         }
     }
 }
