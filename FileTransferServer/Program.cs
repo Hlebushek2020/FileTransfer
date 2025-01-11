@@ -10,17 +10,17 @@ namespace FileTransferServer;
 
 internal class Program
 {
-    private const int BufferSize = 10240;
+    private static int BufferSize = 10240;
 
     static void Main(string[] args)
     {
         Console.Write("Port: ");
         int port = Convert.ToInt32(Console.ReadLine());
-        //Console.Write("Internet speed (mbit/sec): ");
-        //int internetSpeed = Convert.ToInt32(Console.ReadLine());
 
-        //int packedPeerSecond = internetSpeed * 1024 * 1024 / 8 / BufferSize;
-        //int packedInterval = 1000 / packedPeerSecond;
+        Console.Write("Byffer size in kb (default: 10): ");
+        string bufferString = Console.ReadLine();
+        if (int.TryParse(bufferString, out int newBufferSize))
+            BufferSize = newBufferSize;
 
         Console.WriteLine("Starting server...");
         TcpListener listener = new TcpListener(IPAddress.Any, port);
@@ -38,30 +38,43 @@ internal class Program
         BinaryReader binaryReader = new BinaryReader(networkStream, Encoding.UTF8);
         BinaryWriter binaryWriter = new BinaryWriter(networkStream, Encoding.UTF8);
 
-        bool isCommandHandler = true;
-        while (isCommandHandler)
+        bool isContinue = false;
+        do
         {
-            CommandJson commandJson = CommandJson.Parse(binaryReader.ReadString());
-
-            Console.WriteLine($"Command: {commandJson.Command}; Args: {commandJson.Args}");
-
-            switch (commandJson.Command)
+            try
             {
-                case Commands.Exit:
-                    isCommandHandler = false;
-                    break;
+                bool isCommandHandler = true;
+                while (isCommandHandler)
+                {
+                    CommandJson commandJson = CommandJson.Parse(binaryReader.ReadString());
 
-                case Commands.Directory:
-                    DirectoryCommandHandler(commandJson, binaryWriter);
-                    break;
+                    Console.WriteLine($"Command: {commandJson.Command}; Args: {commandJson.Args}");
 
-                case Commands.Download:
-                    DownloadCommandHandler(commandJson, binaryWriter);
-                    break;
+                    switch (commandJson.Command)
+                    {
+                        case Commands.Exit:
+                            isCommandHandler = false;
+                            break;
+
+                        case Commands.Directory:
+                            DirectoryCommandHandler(commandJson, binaryWriter);
+                            break;
+
+                        case Commands.Download:
+                            DownloadCommandHandler(commandJson, binaryWriter);
+                            break;
+                    }
+
+                    Console.WriteLine($"Command completed: {commandJson.Command}");
+                }
             }
-
-            Console.WriteLine($"Command completed: {commandJson.Command}");
-        }
+            catch (Exception ex)
+            {
+                Console.WriteLine(new string('!', 60));
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(new string('!', 60));
+            }
+        } while (isContinue);
     }
 
     private static void DirectoryCommandHandler(CommandJson commandJson, BinaryWriter binaryWriter)
